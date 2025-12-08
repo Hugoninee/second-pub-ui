@@ -15,33 +15,36 @@ const breadcrumbItems = ref<BreadcrumbItem[]>([
 ]);
 
 const switchValue = ref(false);
+
+import picAvatarSrc from '../assets/images/picAvatar.jpg';
+const picAvatar = picAvatarSrc;
 </script>
 
 <template>
-  <div class="flex flex-row justify-between gap-[898px] p-[28px_0_0_0]">
-    <div class="flex flex-col gap-[8px]">
+  <header class="w-full flex flex-row items-center justify-between pt-7 px-12 gap-8">
+    <div class="flex flex-col gap-2 min-w-0 grow">
       <UBreadcrumb separatorIcon="i-lucide-chevron-right" :items="breadcrumbItems"> </UBreadcrumb>
-      <span class="font-sans text-[32px] font-bold text-left leading-[44px] text-[#2c2c2cff]">
+      <span class="font-sans text-[32px] font-bold leading-11 text-[#2c2c2cff] truncate">
         用戶管理
       </span>
     </div>
-    <div class="flex flex-row items-center gap-[8px]">
+    <div class="flex flex-row items-center gap-3 lg:shrink-0">
       <UChip position="bottom-left" color="primary" size="3xl" text="租戶" inset>
         <UAvatar
           size="3xl"
           alt="Avatar image"
-          src="https://s3-alpha-sig.figma.com/img/f5cc/8f6a/56eec51c9197ff8f116df65e280d6d20?Expires=1765756800&Key-Pair-Id=APKAQ4GOSFWCW27IBOMQ&Signature=r0T1bZo78Tta73GNq5rX8uiAeD6kpy4~oEX~vDVojoJnmfwu3gnKcbNEzVHWs6JTiq21QLDJLIrGlu021d-wKw1LKmT9URj8cGrkGbbFVBgx8B8TDnj0ddrWPssxQfQfygqnfkTCALFDwnzQVfPdevTMf2aCdEQDl7AvYhcYHUyT1QPZ6AKn0Hi-4nga5PCm5OO9XeeIzeiXWkuN30mUWKp0yxbyIbePsKQjxJLcOM8X1Z97pTHCUVDPMZQh3HrpeVNoBJsLnxwiHjZ6eioqMJt2TO2m0Vs5r1ukM3axHUJYC1OF8PQCsvpVX3TjQSL4rm4E6fPBMkXenwvvOHmRhA__"
+          :src="picAvatar"
         >
         </UAvatar>
       </UChip>
-      <div class="flex flex-col justify-center">
-        <span class="font-sans text-[14px] font-bold text-left leading-[20px] text-[#2c2c2cff]">
+      <div class="flex flex-col justify-center text-right">
+        <span class="font-sans text-[14px] font-bold leading-5 text-[#2c2c2cff]">
           林建名
         </span>
-        <div class="flex flex-row items-center justify-center gap-[10px]">
+        <div class="flex flex-row items-center justify-end gap-2.5">
           <USwitch color="primary" size="xs" label="前台" v-model="switchValue"> </USwitch>
         </div>
       </div>
     </div>
-  </div>
+  </header>
 </template>
