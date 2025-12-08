@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addComponent } from '@nuxt/kit'
+import { defineNuxtModule, installModule, createResolver, addComponent, installModules } from '@nuxt/kit'
 
 // Module options TypeScript interface definition
 export interface ModuleOptions {}
@@ -10,53 +10,43 @@ export default defineNuxtModule<ModuleOptions>({
   },
   // Default configuration options of the Nuxt module
   defaults: {},
+  moduleDependencies: {
+    '@nuxt/ui': {}
+  },
   async setup(_options, _nuxt) {
     const resolver = createResolver(import.meta.url)
 
-    // 確保 @nuxt/ui 已安裝並註冊
-    await _nuxt.hooks.callHook('modules:before' as any)
-    if (!_nuxt.options.modules.includes('@nuxt/ui')) {
-      _nuxt.options.modules.push('@nuxt/ui')
-    }
+    _nuxt.options.css.push(resolver.resolve('./runtime/assets/tailwind.css'))
 
-    addComponent({
-      name: 'PubFooter',
-      filePath: resolver.resolve('./runtime/components/PubFooter.vue')
+    const components = ['PubFooter', 'PubHeader', 'PubLogoHorizontal', 'PubLogoLarge', 'PubLogoSmall']
+    components.forEach(name => {
+      addComponent({
+        name,
+        filePath: resolver.resolve(`./runtime/components/${name}.vue`)
+      })
     })
-    addComponent({
-      name: 'PubHeader',
-      filePath: resolver.resolve('./runtime/components/PubHeader.vue')
-    })
-    addComponent({
-      name: 'PubLogoHorizontal',
-      filePath: resolver.resolve('./runtime/components/PubLogoHorizontal.vue')
-    })
-    addComponent({
-      name: 'PubLogoLarge',
-      filePath: resolver.resolve('./runtime/components/PubLogoLarge.vue')
-    })
-    addComponent({
-      name: 'PubLogoSmall',
-      filePath: resolver.resolve('./runtime/components/PubLogoSmall.vue')
-    })
+
+    const runtimeDir = resolver.resolve('./runtime') // 先解析到 runtime 資料夾的絕對路徑
     
-    // 確保 Tailwind CSS 掃描模組元件
+    // 針對 Nuxt UI v4 / Tailwind v4 的修正：
+    // 有時候舊的 hook 不會觸發，我們直接注入到 nuxt options 確保生效
+    _nuxt.options.vite = _nuxt.options.vite || {}
+    _nuxt.options.vite.css = _nuxt.options.vite.css || {}
+    _nuxt.options.vite.css.preprocessorOptions = _nuxt.options.vite.css.preprocessorOptions || {}
+
+    // 嘗試使用 hook (針對相容層)
     _nuxt.hook('tailwindcss:config' as any, (tailwindConfig: any) => {
-      const componentPath = resolver.resolve('./runtime/components/**/*.{vue,mjs,ts}')
+      const contentPath = `${runtimeDir}/components/**/*.{vue,js,ts,mjs}`
       
-      // 將元件路徑加入 Tailwind 掃描清單
-      if (!tailwindConfig.content) {
-        tailwindConfig.content = []
-      }
+      // 確保 content 陣列存在並推入路徑
+      tailwindConfig.content = tailwindConfig.content || []
       
+      // 處理 Tailwind v3/v4 不同格式 (Array 或 Object)
       if (Array.isArray(tailwindConfig.content)) {
-        if (!tailwindConfig.content.includes(componentPath)) {
-          tailwindConfig.content.push(componentPath)
-        }
-      } else if (tailwindConfig.content.files) {
-        if (!tailwindConfig.content.files.includes(componentPath)) {
-          tailwindConfig.content.files.push(componentPath)
-        }
+        tailwindConfig.content.push(contentPath)
+      } else {
+         tailwindConfig.content.files = tailwindConfig.content.files || []
+         tailwindConfig.content.files.push(contentPath)
       }
     })
   },
