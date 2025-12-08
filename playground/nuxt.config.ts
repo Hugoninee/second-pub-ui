@@ -3,7 +3,7 @@ export default defineNuxtConfig({
     '../src/module',
     '@nuxt/ui',
   ],
-  secondPubUi: {},
   devtools: { enabled: true },
-  compatibilityDate: '2025-12-04'
+  compatibilityDate: '2025-12-04',
+  secondPubUi: {},
 })

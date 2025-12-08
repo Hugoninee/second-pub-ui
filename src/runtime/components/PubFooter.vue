@@ -6,7 +6,7 @@ const props = defineProps({
     default: 'Default',
     validator: (value: string) => ['Default', 'Service', 'Privacy'].includes(value),
   },
-});
+})
 </script>
 
 <template>
