@@ -9,7 +9,8 @@
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
-    }
+    },
+    "./manifest": "./dist/manifest.mjs"
   },
   "main": "./dist/module.mjs",
   "typesVersions": {
