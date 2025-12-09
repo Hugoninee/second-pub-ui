@@ -23,10 +23,11 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build build",
+    "prepack": "nuxt-module-build build && npm run gen:manifest",
     "dev": "npm run dev:prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "gen:manifest": "node scripts/gen-manifest.mjs",
     "release": "npm run lint && npm run test && npm run prepack && changelogen --release && npm publish && git push --follow-tags",
     "lint": "eslint .",
     "test": "vitest run",
@@ -46,9 +47,11 @@
     "@types/node": "latest",
     "changelogen": "^0.6.2",
     "eslint": "^9.39.1",
+    "glob": "^13.0.0",
     "nuxt": "^4.2.1",
     "typescript": "~5.9.3",
     "vitest": "^4.0.14",
+    "vue-docgen-api": "^4.79.2",
     "vue-tsc": "^3.1.5"
   },
   "overrides": {
