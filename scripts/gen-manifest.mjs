@@ -13,12 +13,7 @@ const OUTPUT_FILE = path.resolve(ROOT_DIR, 'dist/manifest.mjs') // 輸出為 .mj
 async function generate() {
   console.log('🔍 開始掃描元件並生成 ExternalComponentEntry...')
 
-  // 1. 讀取 package.json 以獲取套件名稱 (用於 importPath)
-  const pkgContent = await fs.readFile(path.join(ROOT_DIR, 'package.json'), 'utf-8')
-  const pkg = JSON.parse(pkgContent)
-  const PACKAGE_NAME = pkg.name // 例如 "@hugoninee/second-pub-ui"
-
-  // 2. 掃描所有 .vue 檔案
+  // 1. 掃描所有 .vue 檔案
   const files = await glob(`${COMPONENTS_DIR}/**/*.vue`)
   const entries = []
 
@@ -31,13 +26,13 @@ async function generate() {
       const componentName = doc.displayName || fileNameNoExt
 
       // B. 處理 importPath (必填)
-      // 計算相對路徑：例如 "PubHeader.vue"
-      const relativePath = path.relative(COMPONENTS_DIR, file)
-      // 組合完整 import 字串。
-      // 如果您希望固定用 '@app' 開頭，可以手動將下行改為： const importPrefix = '@app/components';
-      const importPrefix = `${PACKAGE_NAME}/runtime/components`
-      // 注意：這裡假設 runtime 目錄結構會被保留在發布包中
-      const importPath = `${importPrefix}/${relativePath}`
+      // 計算相對路徑（轉為 POSIX 分隔）並移除 .vue 副檔名
+      const relativePath = path.relative(COMPONENTS_DIR, file).replace(/\\/g, '/')
+      const relativePathNoExt = relativePath.replace(/\.vue$/i, '')
+
+      // 組合完整 import 字串，固定以 @app/runtime/components 為開頭
+      const importPrefix = '@app/runtime/components'
+      const importPath = `${importPrefix}/${relativePathNoExt}`
 
       // C. 處理 figmaName (選填)
       // 優先讀取 @figmaName，沒有則讀 @displayName，都沒有則為 undefined
